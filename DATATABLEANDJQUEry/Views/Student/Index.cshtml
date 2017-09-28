@@ -1,0 +1,235 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+<button type="button" class="btn btn-primary btn-md"  data-toggle="modal" data-target="#mymodal">Register</button>
+<!-- Modal -->
+<div id="mymodal" class="modal fade"  tabindex="-1"  role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" >
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Modal Header</h4>
+            </div>
+            @{
+                Html.RenderPartial("_ModalView");
+            }
+            
+            @*<div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>*@
+        </div>
+
+    </div>
+</div>
+@*<div id="EditModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog">*@
+
+        <!-- Modal content-->
+        @*<div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Modal Header</h4>
+            </div>
+            @{
+                Html.RenderPartial("_EditView");
+            }*@
+
+            @*<div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>*@
+        @*</div>
+
+    </div>
+</div>*@
+<div id="DeleteModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Modal Header</h4>
+            </div>
+            @*@{
+                Html.RenderPartial("_DeleteView");
+            }*@
+
+            @*<div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>*@
+        </div>
+
+    </div>
+</div>
+<table id="student" class="table table-responsive table-bordered">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>NAME</th>
+            <th>FATHERS NAME</th>
+            <th>STANDARD</th>
+            <th>SECTION</th>
+            <th>AGE</th>
+            <th>HOME ADDRESS</th>
+            <th>PERMANENT ADDRESS</th>
+            <th>CONTACT</th>
+            <th>ACTIONS</th>
+        </tr>
+    </thead>
+</table>
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script type="text/javascript">
+
+
+    var uri = "/api/Home";
+            $(document).ready(function () {
+                $.getJSON(uri)
+                .done(function (data) {
+                    $.each(data, function (key, item) {
+                        $('#student').append("<tr><td>" + item.Id + "</td>" +
+                            "<td>" + item.Name + "</td>"+
+                            "<td>" + item.FathersName + "</td>" +
+                            "<td>" + item.Standard + "</td>" +
+                            "<td>" + item.Section + "</td>" +
+                            "<td>" + item.Age + "</td>" +
+                            "<td>" + item.HomeAddress + "</td>"+
+                            "<td>" + item.PermanentAddress + "</td>"+
+                            "<td>" + item.Contact + "</td>" +
+                            "<td> <button type='button' name='EDIT' value='EDIT' class='btn btn-default btn-md' onclick='getById(" + item.Id + ")'  id='btnEdit' ></button>" +
+                            "<td><input type='button'  name='DELETE' value='DELETE' id="+item.Id + "</td></tr>");
+                        //" + item.Id + "data-toggle='modal' data-target='#EditModal'
+                    });
+                });
+            });
+  
+    function SetData() {
+        var res = validate();
+        if (res == false) {
+            return false; debugger;
+        }
+        alert("SetData");
+        var empObj = {
+
+            Name: $('#Name').val(),
+            FathersName: $('#FathersName').val(),
+            Standard: $('#Standard').val(),
+            Section: $('#Section').val(),
+            Age: $('#Age').val(),
+            HomeAddress: $('#HomeAddress').val(),
+            PermanentAddress: $('#PermanentAddress').val(),
+            Contact: $('#Contact').val()
+        };
+        $.ajax({
+
+            url: "http://localhost:52456/api/Home/PostAStudent",
+            data: JSON.stringify(empObj),
+            type: "POST",
+            contentType: "application/json;charset=utf-8",
+            dataType: "json",
+            success: function (result) {
+                console.log(result);
+                alert("SetData Executed");
+                //loadData();
+                //$('#myModal').modal('hide');
+            },
+            error: function (errormessage) {
+                alert(errormessage.responseText);
+            }
+        });
+    }
+
+    //Function for getting the Data Based upon Employee ID  
+            function getById(EmpID) {
+                alert("GetbyId"); debugger;
+                $('#Name').css('border-color', 'lightgrey');
+                $('#FathersName').css('border-color', 'lightgrey');
+                $('#Standard').css('border-color', 'lightgrey');
+                $('#Section').css('border-color', 'lightgrey');
+                $('#Age').css('border-color', 'lightgrey');
+                $('#HomeAddress').css('border-color', 'lightgrey');
+                $('#PermanentAddress').css('border-color', 'lightgrey');
+                $('#Contact').css('border-color', 'lightgrey');
+        $.ajax({
+            url: "http://localhost:52456/api/Home/"+EmpID,
+            type: "GET",
+            contentType: "application/json;charset=UTF-8",
+            dataType: "json",
+            success: function (result) {
+                debugger; console.log(result);
+                $('#Id').val(result.Id);
+                $('#Name').val(result.Name);
+                $('#FathersName').val(result.FathersName);
+                $('#Standard').val(result.Standard);
+                $('#Section').val(result.Section);
+                $('#Age').val(result.Age);
+                $('#HomeAddress').val(result.HomeAddress);
+                $('#PermanentAddress').val(result.PermanentAddress);
+                $('#Contact').val(result.Contact);
+
+                $('#mymodal').modal('show');
+                $('#btnUpdate').show();
+                $('#btnAdd').hide();
+                alert("GetbyId Successful");
+            },
+            error: function (errormessage) {
+                alert(errormessage.responseText);
+            }
+        });
+        return false;
+    }
+    //function for updating employee's record  
+    function Update() {
+        var res = validate();
+        if (res == false) {
+            return false;
+        }
+        alert("Update");
+        var empObj = {
+            Id: $('#Id').val(),
+            Name: $('#Name').val(),
+            FathersName: $('#FathersName').val(),
+            Standard: $('#Standard').val(),
+            Section: $('#Section').val(),
+            Age: $('#Age').val(),
+            HomeAddress: $('#HomeAddress').val(),
+            PermanentAddress: $('#PermanentAddress').val(),
+            Contact: $('#Contact').val(),
+        }; 
+        $.ajax({
+            url: "http://localhost:52456/api/Home/PutAStudent",
+            //+ EmpID+empObj
+            data: JSON.stringify(empObj),
+            type: "POST",
+            contentType: "application/json;charset=utf-8",
+            dataType: "json",
+            success: function (result) {
+                loadData();
+                //$('#myModal').modal('hide');
+                $('#Id').val("");
+                $('#Name').val("");
+                $('#FathersName').val("");
+                $('#Standard').val("");
+                $('#Section').val("");
+                $('#Age').val("");
+                $('#HomeAddress').val("");
+                $('#PermanentAddress').val("");
+                $('#Contact').val("");
+                alert("Update done");
+            },
+            error: function (errormessage) {
+                alert("Update exited");
+                alert(errormessage.responseText);
+            }
+        });
+    }
+</script>
+
+
+
+
